@@ -43,7 +43,7 @@ Parse.Cloud.define('submit_new_ad', function(req, res) {
 					var newAdQuery = new Parse.Query("new_ad");
 					newAdQuery.equalTo("user", user.id);
 					newAdQuery.equalTo("category_name", categoryName);
-					newAdQuery.equalTo("ad_status", "wating");
+					newAdQuery.equalTo("ad_status", "waiting");
 					newAdQuery.count({
 						success: function(count) {
 							if(count > 0) {
@@ -56,7 +56,7 @@ Parse.Cloud.define('submit_new_ad', function(req, res) {
 								var adObj = new adObject();
 								adObj.set('user', user.id);
 								adObj.set('virtual_created_at', Date.now());
-								adObj.set('ad_status', 'wating');
+								adObj.set('ad_status', 'waiting');
 								adObj.set('type_name', req.params.type_name);
 								adObj.set('category_name', req.params.category_name);
 								adObj.set('place_name', req.params.place_name);
@@ -91,6 +91,55 @@ Parse.Cloud.define('submit_new_ad', function(req, res) {
 
 	}
 	
-})
+});
+
+/**
+ * publish an ad
+ */
+Parse.Cloud.define('publish_ad', function(req, res) {
+	Parse.Cloud.useMasterKey();
+
+	// TODO check user role
+	
+
+	// fetch the ad
+	var newAd = new Parse.Query("new_ad");
+	newAd.get(req.params.object_id, {
+		success: function(obj) {
+			// create a duplicate and save it to the published_ads collection
+			var adObject = Parse.Object.extend("published_ads");
+			var adObj = new adObject();
+			adObj.set('user', obj.get('user'));
+			adObj.set('virtual_created_at', Date.now());
+			adObj.set('type_name', obj.get('type_name'));
+			adObj.set('category_name', obj.get('category_name'));
+			adObj.set('place_name', obj.get('place_name'));
+			adObj.set('image_name', obj.get('image_name'));
+			adObj.set('title', obj.get('title'));
+			adObj.set('is_urgent', obj.get('is_urgent'));
+			adObj.set('phone', obj.get('phone'));
+			adObj.set('email', obj.get('email'));
+			adObj.set('website', obj.get('website'));
+			adObj.set('desc', obj.get('desc'));
+			adObj.save(null, {
+				success: function(savedAd) {
+					res.success(200);
+
+					// delete the ad from the new_ad collection
+					obj.destroy({success: function() {}, error: function(error) { console.log(error); }});
+
+					// TODO send sms to the user indicating that their ad was published
+					// TODO send notification to the user indicating that their ad was published
+					// TODO send notification to the users subscribed to this category that a new ad was pubed
+				
+				}, error: function(error) {
+					res.error(error);
+				}
+			});
+		}, error: function(error) {
+			res.error(error);
+		}
+	})
+});
 
 

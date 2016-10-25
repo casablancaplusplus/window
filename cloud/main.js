@@ -1,3 +1,5 @@
+// TODO this is important: the user should be able to submit two ads with the same category but in different cities
+
 var messager = require('./messageModule.js');
 var notifier = require('./notificationModule.js');
 var stringModule = require('./stringsModule.js');
@@ -372,7 +374,15 @@ Parse.Cloud.define('publish_ad', function(req, res) {
 					});
 
 					// TODO send sms to the user indicating that their ad was published
-					// TODO send notification to the users subscribed to this category that a new ad was pubed
+					// TODO test this  notification to the users subscribed to this category that a new ad was pubed
+					var promise = notifier.prepareBulkNotification(savedAd);
+					promise.then(function(result) {
+						console.log("PROMISE RESOLVED"); // TODO remove
+						notifier.sendBulkNotification();
+					}, function(error) {
+						console.log(error);
+					});
+					console.log(promise); // TODO remove
 				
 				}, error: function(error) {
 					res.error(error);

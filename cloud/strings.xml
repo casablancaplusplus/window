@@ -9,7 +9,9 @@
 	<string name="admin_message_subtitle">برای خواندن پیام لمس کنید</string>
 	<string name="ad">آگهی</string>
 	<string name="new">جدید</string>
-	<string name="in">در</string>
+	<string name="in_">در</string>
 	<string name="job">شغل</string>
-	<string name=".منتشر شد">منتشر شد</string>
-</resources>
+	<string name="was_published">.منتشر شد</string>
+	<string name="zamineye">زمینه</string>
+	
+</resources>ll

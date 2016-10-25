@@ -1,10 +1,8 @@
 var messager = require('./messageModule.js');
 var notifier = require('./notificationModule.js');
+var stringModule = require('./stringsModule.js');
 
-
-Parse.Cloud.define('hello', function(req, res) {
-  res.success('Hi');
-});
+var strings = stringModule.getStrings();
 
 
 /**
@@ -150,7 +148,6 @@ Parse.Cloud.define('submit_edited_new_ad', function(req, res) {
 								res.success(200);
 
 								// TODO msg the user
-								// TODO send push notification to the user
 								// TODO send sms to the user
 								// saying that their post was submitted and waiting moderation
 							}, error: function(error) {

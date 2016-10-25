@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="ad_published_title">آگهی شما منتشر شد</string>
+	<string name="ad_rejected_title">آگهی شما نیاز به تغییرات دارد</string>
+	<string name="ad_submitted_title">آگهی شما ثبت شد</string>
+	<string name="ad_submitted_subtitle">به زودی توسط ناظر بررسی خواهد شد</string>
+	<string name="ad_status_subtitle">برای مشاهده لمس کنید</string>
+	<string name="admin_message_title">پیام مدیریت</string>
+	<string name="admin_message_subtitle">برای خواندن پیام لمس کنید</string>
+	<string name="ad">آگهی</string>
+	<string name="new">جدید</string>
+	<string name="in">در</string>
+	<string name="job">شغل</string>
+	<string name=".منتشر شد">منتشر شد</string>
+</resources>

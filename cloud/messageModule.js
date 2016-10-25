@@ -1,6 +1,27 @@
 // TODO set the right permissions for users on the messages collection
 
 module.exports = {
+	sendWaitingMsg: function(title, user, adId) {
+		var MsgObject = Parse.Object.extend("messages");
+		var MsgObj = new MsgObject();
+		MsgObj.set('msg_type', 'ad_status');
+		MsgObj.set('ad_status', 'waiting');
+		MsgObj.set('adId', adId);
+		MsgObj.set('user', user.id);
+		MsgObj.set('ad_title', title);
+		MsgObj.set('seen', false);
+		MsgObj.set('clicked', false);
+		MsgObj.save(null, {
+			success: function(savedAd) {
+				console.log("sent waiting message to " + user.id);
+				// TODO send notification to tuser
+				//
+			}, error: function(error) {
+				console.log(error);
+			}
+		});
+	},
+
 	sendRejectionMsg: function(title, user, adId) {
 		var MsgObject = Parse.Object.extend("messages");
 		var MsgObj = new MsgObject();

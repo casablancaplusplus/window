@@ -77,6 +77,12 @@ Parse.Cloud.define('submit_new_ad', function(req, res) {
 								adObj.save(null, {
 									success: function(savedAd) {
 										res.success(200);
+										// TODO test message and notification
+										messager.sendWaitingMsg(
+											savedAd.get('title'),
+											req.user,
+											savedAd.id);
+
 									}, error: function(error) {
 										res.error(error);
 									}
@@ -391,10 +397,16 @@ Parse.Cloud.define('reject_ad', function(req, res) {
 					res.success(200);
 
 					// send message to the user
-					messager.sendRejectionMsg(obj.get('title'), obj.get('user'), obj.id);
-
+					// we need the user object for the msg
+					var userQ = new Parse.Query('User');
+					userQ.get(obj.get('user'), {
+						success: function(user) {
+							messager.sendRejectionMsg(obj.get('title'), user, obj.id);
+						}, error: function(error) {
+							console.log("reject ad: " + error);
+						}
+					});
 					// TODO send sms to user
-					// TODO send notification to user
 				}, error: function(error) {
 					res.error(error);
 				}

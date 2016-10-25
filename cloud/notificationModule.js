@@ -1,5 +1,8 @@
+var appId = "30fb777b-5219-4919-bd01-29cfa4583a79";
+
 module.exports = {
 	sendNotification : function(params) {
+		params.app_id = appId;
 		Parse.Cloud.httpRequest({
 			method: "POST",
 			url: "https://onesignal.com/api/v1/notifications",
@@ -11,7 +14,7 @@ module.exports = {
 		}).then(function(httpResponse) {
 			console.log("notification 200: " + httpResponse);
 		}, function(httpResponse) {
-			console.log("notification failed: " + httpResponse);
+			console.log("notification failed: " + JSON.stringify(httpResponse));
 		});
 	}
 }

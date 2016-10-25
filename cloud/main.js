@@ -361,10 +361,17 @@ Parse.Cloud.define('publish_ad', function(req, res) {
 					obj.destroy({success: function() {}, error: function(error) { console.log(error); }});
 
 					// send message to the user
-					messager.sendPublishmentMsg(savedAd.get('title'), savedAd.get('user'), savedAd.id);
+					// we need the user object for the msg
+					var userQ = new Parse.Query('User');
+					userQ.get(savedAd.get('user'), {
+						success: function(user) {
+							messager.sendPublishmentMsg(savedAd.get('title'), user, savedAd.id);
+						}, error: function(error) {
+							console.log("reject ad: " + error);
+						}
+					});
 
 					// TODO send sms to the user indicating that their ad was published
-					// TODO send notification to the user indicating that their ad was published
 					// TODO send notification to the users subscribed to this category that a new ad was pubed
 				
 				}, error: function(error) {

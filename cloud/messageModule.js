@@ -60,14 +60,19 @@ module.exports = {
 		MsgObj.set('msg_type', 'ad_status');
 		MsgObj.set('ad_status', 'published');
 		MsgObj.set('adId', adId);
-		MsgObj.set('user', user);
+		MsgObj.set('user', user.id);
 		MsgObj.set('ad_title', title);
 		MsgObj.set('seen', false);
 		MsgObj.set('clicked', false);
 		MsgObj.save(null, {
 			success: function(savedAd) {
 				console.log("sent publishment message to " + user);
-				// TODO send notification to tuser
+				// TODO test this notification
+				var params = {};
+				params.include_player_ids = [user.get('onesignal_id')];
+				params.contents = {en : strings.ad_status_subtitle};
+				params.headings = {en : strings.ad_published_title};
+				notifier.sendNotification(params);
 			}, error: function(error) {
 				console.log(error);
 			}

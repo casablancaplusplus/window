@@ -643,7 +643,38 @@ Parse.Cloud.define('turn_off_notifications', function(req, res) {
 });
 
 
+Parse.Cloud.define('make_msgs_seen', function(req, res) {
+	Parse.Cloud.useMasterKey();
 
+	var user = req.user;
+	// make sure the user is not null
+	if(user == null || user == undefined) {
+		// TODO replace the error with a code
+		// and ask the user to sign up manually 
+		// because the anonymous registration is not working for them
+		res.error("user is not registered");
+	} else {
+		// make sure the user is himself
+		if(user.id == req.params.user_id) {
+			// query the msgs
+			var msgQ = new Parse.Query('messages');
+			msgQ.equalTo('seen', false);
+			msgQ.each(function(result) {
+				result.set('seen', true);
+				result.save();
+			}, {
+				success: function(result) {
+					res.success(200);
+				}, error: function(error) {
+					res.error(error);
+				}
+			});
+
+		} else {
+			res.error("you are not allowed to perform this operation");
+		}
+	}
+});
 
 // TODO remove this test function
 Parse.Cloud.define('send_reject_message', function(req, res) {

@@ -155,7 +155,11 @@ Parse.Cloud.define('submit_edited_new_ad', function(req, res) {
 							success: function(savedAd) {
 								res.success(200);
 
-								// TODO msg the user
+								messager.sendWaitingMsg(
+									savedAd.get('title'),
+									req.user,
+									savedAd.id);
+
 								// TODO send sms to the user
 								// saying that their post was submitted and waiting moderation
 							}, error: function(error) {
@@ -222,8 +226,11 @@ Parse.Cloud.define('submit_edited_published_ad', function(req, res) {
 							success: function(savedAd) {
 								res.success(200);
 
-								// TODO msg the user
-								// TODO send push notification to the user
+								messager.sendWaitingMsg(
+									savedAd.get('title'),
+									req.user,
+									savedAd.id);
+
 								// TODO send sms to the user
 								// saying that their post was submitted and waiting moderation
 
@@ -369,7 +376,7 @@ Parse.Cloud.define('publish_ad', function(req, res) {
 						success: function(user) {
 							messager.sendPublishmentMsg(savedAd.get('title'), user, savedAd.id);
 						}, error: function(error) {
-							console.log("reject ad: " + error);
+							console.log("could not fetch user: " + error);
 						}
 					});
 
@@ -465,7 +472,22 @@ Parse.Cloud.define('submit_invitation', function(req, res) {
 					invObj.save({
 						success: function(savedObj) {
 							res.success(200);
-							// TODO send a notification to the inviter stating that someone used their code
+							// TODO test this notification to the inviter stating that someone used their code
+							var userQ = new Parse.Query('User');
+							userQ.select('onesignal_id');
+							userQ.get(user.id, {
+							success: function(user) {
+								var params = {};
+								params.include_player_ids = [user.get('onesignal_id')];
+								params.contents = {en : strings.dametoon_garm_content };
+								params.headings = {en : strings.dametoon_garm_heading };
+								notifier.sendNotification(params);
+
+							}, error: function(error) {
+								console.log("could not fetch user: " + error);
+							}
+							});
+
 						}, error: function(error) {
 							res.error(error);
 						}

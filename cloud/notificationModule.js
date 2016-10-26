@@ -57,14 +57,18 @@ module.exports = {
 				bulkHeading += ' ';
 				bulkHeading += ad.get('type_name');
 				bulkHeading += ' ';
-				bulkHeading += strings.in_;
-				bulkHeading += ' ';
-				bulkHeading += strings.zamineye;
-				bulkHeading += ' ';
-				bulkHeading += ad.get('category_name');
+				bulkHeading += strings.new_;
 
 				// content
 				bulkContent += strings.in_;
+				bulkContent += ' ';
+				bulkContent += strings.zamineye;
+				bulkContent += ' ';
+				bulkContent += ad.get('category_name');
+				bulkContent += ' ';
+				bulkContent += strings.in_;
+				bulkContent += ' ';
+				bulkContent += strings.city;
 				bulkContent += ' ';
 				bulkContent += ad.get('city_name');
 				bulkContent += ' ';
@@ -77,40 +81,6 @@ module.exports = {
 		}, function(error) {
 			return error;
 		});
-		/*
-		q.find({
-			success: function(results) {
-				console.log("RESULT LENGTH: " + results.length); // TODO remove this
-				for(var i = 0; i < results.length; i++) {
-					bulkIds.push(results[i]);
-				}
-				console.log("BULK IDS: " + bulkIds); // TODO remove this
-				// heading
-				bulkHeading += strings.ad;
-				bulkHeading += ' ';
-				bulkHeading += ad.get('type_name');
-				bulkHeading += ' ';
-				bulkHeading += strings.in_;
-				bulkHeading += ' ';
-				bulkHeading += strings.zamineye;
-				bulkHeading += ' ';
-				bulkHeading += ad.get('category_name');
-
-				// content
-				bulkContent += strings.in_;
-				bulkContent += ' ';
-				bulkContent += ad.get('city_name');
-				bulkContent += ' ';
-				bulkContent += strings.was_published;
-
-				promise.resolve("resolved");
-
-			}, error: function(error) {
-				console.log(error);
-				promise.reject("rejected");
-			}
-		});
-		*/
 	}
 }
 

@@ -15,21 +15,10 @@ module.exports = {
 
 		// TODO set the image as the featured_media if it exists
 		
-		var categories = [];
-		var tags = [];
-		categories.push(ad.get('place_name'));
-		tags.push(ad.get('place_name'));
-		categories.push(ad.get('category_name'));
-		tags.push(ad.get('category_name'));
-		categories.push(ad.get('type_name'));
-		tags.push(ad.get('type_name'));
-		if(ad.get('is_urgent')) {
-			categories.push(strings.urgent);
-			tags.push(strings.urgent);
-		}
-		//categories.push(ad.get('city_name'));
-		//tags.push(ad.get('city_name'));
-		
+		//if(ad.get('is_urgent')) {
+	//		categories.push(strings.urgent);
+//			tags.push(strings.urgent);
+//		}
 
 		var desc = ad.get('desc');
 		var length = 140;
@@ -41,26 +30,74 @@ module.exports = {
 			title: ad.get('title'),
 			content: ad.get('desc'),
 			excerpt: desc.substring(1, length),
-			comment_status: 'open',
-			categories: categories,
-			tags: tags
+			comment_status: 'open'
 		}
 
-		console.log(params); // TODO remove this
-			
+		var tagResponse;
+		var categoryResponse;
+
 		Parse.Cloud.httpRequest({
-			method: 'POST',
-			url: url + '/posts',
-			params: params,
-			headers: {
-				Authorization: 'Basic' + ' ' + authToken
-			}
+			method: 'GET',
+			url: url + '/tags?per_page=100'
 		}).then(function(httpResponse) {
-			console.log("POSTED TO WEBSITE 200");
-			// TODO create the categories and update the post with them
+			tagResponse = JSON.parse(httpResponse.text);
+			return Parse.Cloud.httpRequest({
+				method: 'GET',
+				url: url + '/categories?per_page=100'
+			}).then(function(httpResponse){
+				categoryResponse = JSON.parse(httpResponse.text);
+				console.log("cats : " +  JSON.stringify(categoryResponse));
+			}, function(httpResponse) {
+				console.log(httpResponse);
+			});
+
 		}, function(httpResponse) {
-			console.log("FAILED WEBSITE POST");
-		});
+			console.log(httpResponse);
+		}).then(function(result) {
+			var categories = [];
+			var tags = [];
+			console.log("I'm here "); // TODO remove this
+			// fetch the categories
+			for(var i = 0; i < categoryResponse.length; i++) {
+				var catObj = categoryResponse[i];
+				if(catObj.name == ad.get('category_name')) {
+					categories.push(catObj.id);
+					break;
+				}
+			}
+			
+			// fetch the tags
+			for(var i = 0; i < tagResponse.length; i++) {
+				var tagObj = tagResponse[i];
+				if(tagObj.name == ad.get('category_name') ||
+				tagObj.name == ad.get('type_name') ||
+				tagObj.name == ad.get('city_name') ||
+				tagObj.name == strings.urgent) tags.push(tagObj.id);
+			}
+
+			console.log("tags : " + tags + " cats " + categories); // TODO remove this
+
+			params.categories = categories;
+			params.tags = tags;
+
+			return Parse.Cloud.httpRequest({
+				method: 'POST',
+				url: url + '/posts',
+				params: params,
+				headers: {
+					Authorization: 'Basic' + ' ' + authToken
+				}
+			}).then(function(httpResponse) {
+				console.log("POSTED TO WEBSITE 200");
+			}, function(httpResponse) {
+				console.log("FAILED WEBSITE POST");
+			});
+
+		}, function(result) {
+			console.log(result);
+		})
+
+			
 		} catch(ex) {console.log(ex);}
 	}
 

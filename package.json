@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "express": "~4.11.x",
+    "form-data": "^2.1.1",
     "kerberos": "~0.0.x",
     "parse": "~1.8.0",
     "parse-server": "*"

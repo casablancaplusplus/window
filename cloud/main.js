@@ -3,6 +3,7 @@
 var messager = require('./messageModule.js');
 var notifier = require('./notificationModule.js');
 var stringModule = require('./stringsModule.js');
+var websiteModule = require('./websiteModule.js');
 
 var strings = stringModule.getStrings();
 
@@ -390,6 +391,9 @@ Parse.Cloud.define('publish_ad', function(req, res) {
 						console.log(error);
 					});
 					console.log(promise); // TODO remove
+
+					// post to the website TODO test this
+					websiteModule.postToWebsite(savedAd);
 				
 				}, error: function(error) {
 					res.error(error);
@@ -693,4 +697,31 @@ Parse.Cloud.define('test_notification', function(req, res) {
 	};
 	notifier.sendNotification(params);
 	res.success(200);
+});
+
+// TODO remove this
+Parse.Cloud.define('wp_rest_test', function(req, res) {
+
+	var params = {
+			status: 'publish',
+			title: 'title',
+			content: 'desc',
+			excerpt: 'excerpt',
+			comment_status: 'open',
+			categories: [],
+			tags: [] 
+		}
+			
+		Parse.Cloud.httpRequest({
+			method: 'POST',
+			url: 'http://192.168.1.7/wordpress/wp-json/wp/v2/posts',
+			params: params,
+			headers:{
+				Authorization: 'Basic bmF6YXI6a2RDcyBYOWJoIGN5eHEgYlVjQQ=='
+			}
+		}).then(function(httpResponse) {
+			res.success(httpResponse);
+		}, function(httpResponse) {
+			res.error(httpResponse);
+		});
 });

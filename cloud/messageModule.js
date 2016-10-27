@@ -22,6 +22,7 @@ module.exports = {
 				params.include_player_ids = [user.get('onesignal_id')];
 				params.contents = {en : strings.ad_submitted_subtitle};
 				params.headings = {en : strings.ad_submitted_title};
+				params.data = {notification_type : "ad_status_change"};
 				notifier.sendNotification(params);
 			}, error: function(error) {
 				console.log(error);
@@ -47,6 +48,7 @@ module.exports = {
 				params.include_player_ids = [user.get('onesignal_id')];
 				params.contents = {en : strings.ad_status_subtitle};
 				params.headings = {en : strings.ad_rejected_title};
+				params.data = {notification_type : "ad_status_change"};
 				notifier.sendNotification(params);
 			}, error: function(error) {
 				console.log(error);
@@ -72,6 +74,7 @@ module.exports = {
 				params.include_player_ids = [user.get('onesignal_id')];
 				params.contents = {en : strings.ad_status_subtitle};
 				params.headings = {en : strings.ad_published_title};
+				params.data = {notification_type : "ad_status_change"};
 				notifier.sendNotification(params);
 			}, error: function(error) {
 				console.log(error);

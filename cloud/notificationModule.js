@@ -10,6 +10,7 @@ var appId = "30fb777b-5219-4919-bd01-29cfa4583a79";
 var bulkIds = []; // the players that will recieve the bulk notification 
 var bulkHeading = ""; // the title of the bulk notification 
 var bulkContent = ""; // the content of the bulk notification 
+var objectId = "";
 module.exports = {
 	sendNotification : function(params) {
 		params.app_id = appId;
@@ -34,12 +35,14 @@ module.exports = {
 		console.log("BULK IDS : " + bulkIds + bulkHeading); // TODO remove this
 		params.contents = {en : bulkContent};
 		params.headings = {en : bulkHeading};
+		params.data = {notification_type : "new_published_ad", object_id : objectId};
 		this.sendNotification(params);
 	},
 	prepareBulkNotification : function(ad) {
 		bulkIds = [];
 		bulkHeading = "";
 		bulkContent = "";
+		objectId = ad.id;
 		// fetch the users subscribed the category and city
 		var q = new Parse.Query('User');
 		q.select("onesignal_id");

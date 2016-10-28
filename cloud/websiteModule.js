@@ -116,6 +116,7 @@ module.exports = {
 				console.log("POSTED TO WEBSITE 200");
 				var response = JSON.parse(httpResponse.text);
 				ad.set('wordpress_post_id', response.id);
+				ad.set('web_link', response.link);
 				ad.save();
 			}, function(httpResponse) {
 				console.log("FAILED WEBSITE POST");

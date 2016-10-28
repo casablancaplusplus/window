@@ -17,4 +17,8 @@
 	<string name="dametoon_garm_content">یک نفر به دعوت شما وارد برنامه شد</string>
 	<string name="dametoon_garm_heading">دمتون گرم!!!</string>
 	<string name="urgent">فوری</string>
+	<string name="phone_number">شماره تماس</string>
+	<string name="email">ایمیل</string>
+	<string name="website">وبسایت</string>
+	<string name="colon">:</string>
 </resources>

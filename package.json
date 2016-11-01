@@ -12,6 +12,7 @@
     "express": "~4.11.x",
     "form-data": "^2.1.1",
     "kerberos": "~0.0.x",
+    "node-cron": "^1.1.2",
     "parse": "~1.8.0",
     "parse-server": "*"
   },

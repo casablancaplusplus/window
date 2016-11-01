@@ -27,6 +27,32 @@ module.exports = {
 			}
 		});
 	},
+	sendExpirationMsg: function(title, user, adId) {
+		var MsgObject = Parse.Object.extend("messages");
+		var MsgObj = new MsgObject();
+		MsgObj.set('msg_type', 'ad_status');
+		MsgObj.set('ad_status', 'expired');
+		MsgObj.set('adId', adId);
+		MsgObj.set('user', user.id);
+		MsgObj.set('ad_title', title);
+		MsgObj.set('seen', false);
+		MsgObj.set('clicked', false);
+		MsgObj.save(null, {
+			success: function(savedAd) {
+				console.log("sent expiration message to " + user.id);
+				// TODO test this notification
+				var params = {};
+				params.include_player_ids = [user.get('onesignal_id')];
+				params.contents = {en : strings.ad_expired_title};
+				params.headings = {en : strings.ad_status_subtitle};
+				params.data = {notification_type : "ad_status_change"};
+				notifier.sendNotification(params);
+			}, error: function(error) {
+				console.log(error);
+			}
+		});
+	},
+
 	sendWaitingMsg: function(title, user, adId) {
 		var MsgObject = Parse.Object.extend("messages");
 		var MsgObj = new MsgObject();

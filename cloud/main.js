@@ -185,7 +185,7 @@ Parse.Cloud.define('submit_edited_new_ad', function(req, res) {
 /**
  * this function removes the alread "published" ad from the published_ads collection
  * and then submits the edited version to the new_ad collection to be checked again
- */
+ */ // TODO delete the ad from the website
 Parse.Cloud.define('submit_edited_published_ad', function(req, res) {
 	Parse.Cloud.useMasterKey();
 
@@ -752,6 +752,163 @@ Parse.Cloud.define('make_msgs_seen', function(req, res) {
 		}
 	}
 });
+
+/**
+ * expire the ads that are a month old
+ */ // TODO delete the ad from the wordpress website
+Parse.Cloud.define('expire_ads', function(req, res) {
+	Parse.Cloud.useMasterKey();
+
+	console.log('Ran Expiration Job');
+
+	// query the ads that are a month old
+	var adQ = new Parse.Query('published_ads');
+	/* month old date
+	var nowMillis = Date.now();
+	var millisInMonth = 2678400000; // 31 day month
+	var monthOldMillis = nowMillis - millisInMonth;
+	var monthOldDate = new Date(monthOldMillis); // 1 month old date
+	adQ.lessThan('createdAt', monthOldDate);
+	*/
+
+	// 30 sex old date
+	var nowMillis = Date.now();
+	var millisInMonth = 30*1000; // 30 seconds month
+	var monthOldMillis = nowMillis - millisInMonth;
+	var monthOldDate = new Date(monthOldMillis); // 30 second old date
+	adQ.lessThan('createdAt', monthOldDate);
+
+	adQ.each(function(ad) {
+		// duplicate in the expired_ads collection and delete it then notify the user
+		var adObject = Parse.Object.extend('expired_ads');
+		var adObj = new adObject();
+		adObj.set('user', ad.get('user'));
+		adObj.set('virtual_created_at', Date.now());
+		adObj.set('type_name', ad.get('type_name'));
+		adObj.set('category_name', ad.get('category_name'));
+		adObj.set('place_name', ad.get('place_name'));
+		adObj.set('city_name', ad.get('city_name'));
+		adObj.set('image_name', ad.get('image_name'));
+		adObj.set('title', ad.get('title'));
+		adObj.set('is_urgent', ad.get('is_urgent'));
+		adObj.set('phone', ad.get('phone'));
+		adObj.set('email', ad.get('email'));
+		adObj.set('website', ad.get('website'));
+		adObj.set('desc', ad.get('desc'));
+		adObj.set('ad_status', 'expired');
+		return adObj.save().then(function(savedAd) {
+			console.log("I'm here"); // TODO remove this
+			ad.destroy({
+				success:function() {
+						res.success(200);
+						console.log('Expired an ad');
+					}, error: function(error) {
+						res.error(error);
+						console.log('Expired an ad but failed to delete from the published collection: ' + error);
+					}
+				});
+
+			var userQ = new Parse.Query('User');
+			userQ.get(savedAd.get('user'), {
+				success: function(user) {
+					// notify the user
+					messager.sendExpirationMsg(ad.get('title'), user, ad.id);
+				}, error: function(error) {
+					console.log(error);
+				}
+			});
+
+			
+		});
+	});
+});
+			
+			
+/*
+ * extend an expired ad
+ */
+Parse.Cloud.define('extend_ad', function(req, res) {
+	Parse.Cloud.useMasterKey();
+
+	var user = req.user;
+	// make sure the user is not null
+	if(user == null || user == undefined) {
+		// TODO replace the error with a code
+		// and ask the user to sign up manually 
+		// because the anonymous registration is not working for them
+		res.error("user is not registered");
+	} else {
+		// make sure the user is himself
+		if(user.id == req.params.id) {
+			// fetch the ad from the expired collection
+			var adQ = new Parse.Query('expired_ads');
+			adQ.get(req.params.ad_id, {
+				success: function(obj) { // expired ad
+					// create a new published ad
+					// create a duplicate and save it to the published_ads collection
+			var adObject = Parse.Object.extend("published_ads");
+			var adObj = new adObject();
+			adObj.set('user', obj.get('user'));
+			adObj.set('virtual_created_at', Date.now());
+			adObj.set('type_name', obj.get('type_name'));
+			adObj.set('category_name', obj.get('category_name'));
+			adObj.set('place_name', obj.get('place_name'));
+			adObj.set('city_name', obj.get('city_name'));
+			adObj.set('image_name', obj.get('image_name'));
+			adObj.set('title', obj.get('title'));
+			adObj.set('is_urgent', obj.get('is_urgent'));
+			adObj.set('phone', obj.get('phone'));
+			adObj.set('email', obj.get('email'));
+			adObj.set('website', obj.get('website'));
+			adObj.set('desc', obj.get('desc'));
+			adObj.set('ad_status', 'published');
+			adObj.save(null, {
+				success: function(savedAd) {
+					res.success(200);
+
+					// delete the ad from the expired collection
+					obj.destroy({success: function() {}, error: function(error) { console.log(error); }});
+
+					// send message to the user
+					// we need the user object for the msg
+					var userQ = new Parse.Query('User');
+					userQ.get(savedAd.get('user'), {
+						success: function(user) {
+							messager.sendPublishmentMsg(savedAd.get('title'), user, savedAd.id);
+						}, error: function(error) {
+							console.log("could not fetch user: " + error);
+						}
+					});
+
+					// TODO send sms to the user indicating that their ad was published
+					// TODO test this  notification to the users subscribed to this category that a new ad was pubed
+					var promise = notifier.prepareBulkNotification(savedAd);
+					promise.then(function(result) {
+						console.log("PROMISE RESOLVED"); // TODO remove
+						notifier.sendBulkNotification();
+					}, function(error) {
+						console.log(error);
+					});
+					console.log(promise); // TODO remove
+
+					// post to the website TODO test this
+					websiteModule.postToWebsite(savedAd);
+				
+				}, error: function(error) {
+					res.error(error);
+				}
+			});
+				}, error: function(error) {
+					res.error(error);
+				}
+			});
+		} else {
+			res.error("you are not allowed to perform this operation");
+		}
+	}
+});
+
+
 
 // TODO remove this test function
 Parse.Cloud.define('send_reject_message', function(req, res) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<string name="ad_expired_title">آگهی شما منقضی شد</string>
 	<string name="ad_published_title">آگهی شما منتشر شد</string>
 	<string name="ad_rejected_title">آگهی شما نیاز به تغییرات دارد</string>
 	<string name="ad_submitted_title">آگهی شما ثبت شد</string>

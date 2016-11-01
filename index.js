@@ -5,6 +5,7 @@ var express = require('express');
 var ParseServer = require('parse-server').ParseServer;
 var path = require('path');
 var ParseDashboard = require('parse-dashboard');
+var cron = require('node-cron');
 
 var allowInsecureHTTP = true;
 
@@ -43,6 +44,15 @@ var dashboard = new ParseDashboard({
 }, allowInsecureHTTP);
 
 var app = express();
+
+// the cron job that expires ads
+// run every 1 hour
+// TODO test this in real world
+var task = cron.schedule('*/30 * * * * *', function() {
+	Parse.Cloud.run('expire_ads', {}).then(function(result) {});
+}, false);
+
+task.start();
 
 // Serve static assets from the /public folder
 app.use('/public', express.static(path.join(__dirname, '/public')));

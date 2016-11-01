@@ -332,7 +332,37 @@ Parse.Cloud.define('delete_published_ad', function(req, res) {
 });
 
 
+/**
+ * send an admin message to all the users
+ */
+Parse.Cloud.define('send_admin_message', function(req, res) {
+	Parse.Cloud.useMasterKey();
 
+	console.log("I'm here"); // TODO remove this
+	// TODO check user role
+	var userq = new Parse.Query('User');
+	userq.select("onesignal_id");
+	userq.find({
+		success: function(results) {
+			var playerIds = [];
+			var userIds = [];
+			for(var i = 0; i < results.length; ++i) {
+				var result = results[i];
+				if(result.get("onesignal_id") != "" && result.get('onesignal_id') != undefined) {
+					playerIds.push(result.get('onesignal_id'));
+					console.log(result.onesignal_id);
+				}
+				console.log(playerIds); // TODO remove this
+				userIds.push(results[i].id);
+			}
+			messager.sendAdminMsg(req.params.message_title, req.params.message_url, userIds, playerIds);
+			res.success(200);
+		}, error: function(error) {
+			res.error(error);
+		}
+	})
+});
+	
 /**
  * publish an ad
  */
@@ -560,7 +590,50 @@ Parse.Cloud.define('subscribe_cats', function(req, res) {
 		});
 	}
 });
-		
+
+/**
+ * subscribe to a single cat
+ */
+Parse.Cloud.define('subscribe_to_cat', function(req, res) {
+	Parse.Cloud.useMasterKey();
+
+	var user = req.user;
+	// make sure the user is not null
+	if(user == null || user == undefined) {
+		// TODO replace the error with a code
+		// and ask the user to sign up manually 
+		// because the anonymous registration is not working for them
+		res.error("user is not registered");
+	} else {
+		var alreadySubed = false;
+		var currentCats = req.user.get('subscribed_cats');
+		if(currentCats != undefined) {
+			// is the user already subscribed to this cat ?
+			for(var i = 0; i < currentCats.length; i++) {
+				if(currentCats[i] == req.params.new_cat) {
+					alreadySubed = true
+					res.success(200);
+				}
+			}
+		}
+
+		if(!alreadySubed) {
+		// add the cat and update the user
+		if(currentCats == undefined) currentCats = [];
+		currentCats.push(req.params.new_cat);
+		user.set('subscribed_cats', currentCats);
+		user.save({
+			success:function(user) {
+				res.success(200);
+			}, error: function(error) {
+				res.error(error);
+			}
+		});
+		}
+	}
+});
+
+	
 
 Parse.Cloud.define('subscribe_cities', function(req, res) {
 	Parse.Cloud.useMasterKey();

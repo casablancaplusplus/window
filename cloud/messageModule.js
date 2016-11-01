@@ -4,6 +4,29 @@ var notifier = require('./notificationModule.js');
 var strings = stringsModule.getStrings();
 
 module.exports = {
+	sendAdminMsg: function(msgTitle, msgUrl, userIds, playerIds) {
+		var MsgObject = Parse.Object.extend('messages');
+		var msgObj = new MsgObject();
+		msgObj.set('msg_type', 'admin_msg');
+		msgObj.set('msg_title', msgTitle);
+		msgObj.set('msg_url', msgUrl);
+		msgObj.set('seen', false);
+		msgObj.set('clicked', false);
+		msgObj.set('user_array', userIds);
+		msgObj.save({
+			success: function(savedObj) {
+				console.log("SENT Admin Message"); // TODO remove this line
+				var params = {};
+				params.include_player_ids = playerIds;
+				params.contents = {en : strings.admin_message_subtitle};
+				params.headings = {en : msgTitle};
+				params.data = {notification_type : "admin_msg", url: msgUrl};
+				notifier.sendNotification(params);
+			}, error: function(error) {
+				console.log(error);
+			}
+		});
+	},
 	sendWaitingMsg: function(title, user, adId) {
 		var MsgObject = Parse.Object.extend("messages");
 		var MsgObj = new MsgObject();

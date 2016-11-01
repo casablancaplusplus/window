@@ -47,8 +47,8 @@ var app = express();
 
 // the cron job that expires ads
 // run every 1 hour
-// TODO test this in real world
-var task = cron.schedule('*/30 * * * * *', function() {
+// TODO test this in production
+var task = cron.schedule('*/59 * * * *', function() {
 	Parse.Cloud.run('expire_ads', {}).then(function(result) {});
 }, false);
 

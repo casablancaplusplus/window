@@ -21,7 +21,6 @@ Parse.Cloud.define('submit_new_ad', function(req, res) {
 	var user = req.user;
 	// make sure the user is not null
 	if(user == null || user == undefined) {
-		// TODO replace the error with a code
 		// and ask the user to sign up manually 
 		// because the anonymous registration is not working for them
 		res.error("user is not registered");
@@ -338,7 +337,6 @@ Parse.Cloud.define('delete_published_ad', function(req, res) {
 Parse.Cloud.define('send_admin_message', function(req, res) {
 	Parse.Cloud.useMasterKey();
 
-	console.log("I'm here"); // TODO remove this
 	// TODO check user role
 	var userq = new Parse.Query('User');
 	userq.select("onesignal_id");
@@ -352,7 +350,6 @@ Parse.Cloud.define('send_admin_message', function(req, res) {
 					playerIds.push(result.get('onesignal_id'));
 					console.log(result.onesignal_id);
 				}
-				console.log(playerIds); // TODO remove this
 				userIds.push(results[i].id);
 			}
 			messager.sendAdminMsg(req.params.message_title, req.params.message_url, userIds, playerIds);
@@ -415,12 +412,10 @@ Parse.Cloud.define('publish_ad', function(req, res) {
 					// TODO test this  notification to the users subscribed to this category that a new ad was pubed
 					var promise = notifier.prepareBulkNotification(savedAd);
 					promise.then(function(result) {
-						console.log("PROMISE RESOLVED"); // TODO remove
 						notifier.sendBulkNotification();
 					}, function(error) {
 						console.log(error);
 					});
-					console.log(promise); // TODO remove
 
 					// post to the website TODO test this
 					websiteModule.postToWebsite(savedAd);
@@ -763,20 +758,21 @@ Parse.Cloud.define('expire_ads', function(req, res) {
 
 	// query the ads that are a month old
 	var adQ = new Parse.Query('published_ads');
-	/* month old date
+	// TODO test in production
 	var nowMillis = Date.now();
 	var millisInMonth = 2678400000; // 31 day month
 	var monthOldMillis = nowMillis - millisInMonth;
 	var monthOldDate = new Date(monthOldMillis); // 1 month old date
 	adQ.lessThan('createdAt', monthOldDate);
-	*/
 
+	/*
 	// 30 sex old date
 	var nowMillis = Date.now();
 	var millisInMonth = 30*1000; // 30 seconds month
 	var monthOldMillis = nowMillis - millisInMonth;
 	var monthOldDate = new Date(monthOldMillis); // 30 second old date
 	adQ.lessThan('createdAt', monthOldDate);
+	*/
 
 	adQ.each(function(ad) {
 		// duplicate in the expired_ads collection and delete it then notify the user

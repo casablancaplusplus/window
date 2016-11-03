@@ -3,11 +3,25 @@ var stringModule = require('./stringsModule.js');
 
 var strings = stringModule.getStrings();
 
-var ip = "192.168.1.7";
+var ip = "192.168.1.5";
 var url = "http://" + ip +"/wordpress/wp-json/wp/v2";
 var authToken = "bmF6YXI6a2RDcyBYOWJoIGN5eHEgYlVjQQ==";
 
 module.exports = {
+	deleteFromWebsite: function(adId) {
+		console.log("DELETING AD FROM WEBSITE");
+		Parse.Cloud.httpRequest({
+			method: 'DELETE',
+			url: url + '/posts/' + adId,
+			headers: {
+				Authorization: 'Basic' + ' ' + authToken
+			}
+		}).then(function(httpResponse) {
+			console.log('DELETED AD ' + adId + ' FROM WEBSITE');
+		}, function(httpResponse) {
+			console.log('ERROR DELETING AD ' + adId + ' FROM WEBSITE');
+		});
+	},	
 	postToWebsite: function(ad) {
 
 		try {
@@ -130,7 +144,6 @@ module.exports = {
 		} catch(ex) {console.log(ex);}
 	}
 
-	// TODO implement the delete function for expiration purposes
 }
 	
 

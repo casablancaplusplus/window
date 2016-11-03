@@ -79,7 +79,6 @@ Parse.Cloud.define('submit_new_ad', function(req, res) {
 								adObj.save(null, {
 									success: function(savedAd) {
 										res.success(200);
-										// TODO test message and notification
 										messager.sendWaitingMsg(
 											savedAd.get('title'),
 											req.user,
@@ -112,7 +111,6 @@ Parse.Cloud.define('submit_new_ad', function(req, res) {
  * this function removes the already rejected ad from the new_ad collection
  * and then submits the edited version in the new_ad collection
  *
- * TODO: you might need to check whether the user is authorized to edit this ad
  */
 Parse.Cloud.define('submit_edited_new_ad', function(req, res) {
 	Parse.Cloud.useMasterKey();
@@ -120,7 +118,6 @@ Parse.Cloud.define('submit_edited_new_ad', function(req, res) {
 	var user = req.user;
 	// make sure the user is not null
 	if(user == null || user == undefined) {
-		// TODO replace the error with a code
 		// and ask the user to sign up manually 
 		// because the anonymous registration is not working for them
 		res.error("user is not registered");
@@ -160,8 +157,6 @@ Parse.Cloud.define('submit_edited_new_ad', function(req, res) {
 									req.user,
 									savedAd.id);
 
-								// TODO send sms to the user
-								// saying that their post was submitted and waiting moderation
 							}, error: function(error) {
 								res.error(error);
 							}
@@ -184,14 +179,13 @@ Parse.Cloud.define('submit_edited_new_ad', function(req, res) {
 /**
  * this function removes the alread "published" ad from the published_ads collection
  * and then submits the edited version to the new_ad collection to be checked again
- */ // TODO delete the ad from the website
+ */
 Parse.Cloud.define('submit_edited_published_ad', function(req, res) {
 	Parse.Cloud.useMasterKey();
 
 	var user = req.user;
 	// make sure the user is not null
 	if(user == null || user == undefined) {
-		// TODO replace the error with a code
 		// and ask the user to sign up manually 
 		// because the anonymous registration is not working for them
 		res.error("user is not registered");
@@ -202,6 +196,7 @@ Parse.Cloud.define('submit_edited_published_ad', function(req, res) {
 			success: function(publishedAd) {
 				// does this ad belong to the user requesting this operation ? if yes, do it, otherwise, don't
 				if(req.user.id == publishedAd.get('user')) {
+					var postIdInWebsite = publishedAd.get('wordpress_post_id'); // used to delete the ad from the website
 				// destroy the ad
 				publishedAd.destroy({
 					success: function() {
@@ -231,8 +226,9 @@ Parse.Cloud.define('submit_edited_published_ad', function(req, res) {
 									req.user,
 									savedAd.id);
 
-								// TODO send sms to the user
-								// saying that their post was submitted and waiting moderation
+								// DELETE the ad from the website
+								websiteModule.deleteFromWebsite(postIdInWebsite);
+								
 
 							}, error: function(error) {
 								res.error(error);
@@ -262,7 +258,6 @@ Parse.Cloud.define('delete_ad', function(req, res) {
 	var user = req.user;
 	// make sure the user is not null
 	if(user == null || user == undefined) {
-		// TODO replace the error with a code
 		// and ask the user to sign up manually 
 		// because the anonymous registration is not working for them
 		res.error("user is not registered");
@@ -301,7 +296,6 @@ Parse.Cloud.define('delete_published_ad', function(req, res) {
 	var user = req.user;
 	// make sure the user is not null
 	if(user == null || user == undefined) {
-		// TODO replace the error with a code
 		// and ask the user to sign up manually 
 		// because the anonymous registration is not working for them
 		res.error("user is not registered");
@@ -408,7 +402,6 @@ Parse.Cloud.define('publish_ad', function(req, res) {
 						}
 					});
 
-					// TODO send sms to the user indicating that their ad was published
 					// TODO test this  notification to the users subscribed to this category that a new ad was pubed
 					var promise = notifier.prepareBulkNotification(savedAd);
 					promise.then(function(result) {
@@ -459,7 +452,6 @@ Parse.Cloud.define('reject_ad', function(req, res) {
 							console.log("reject ad: " + error);
 						}
 					});
-					// TODO send sms to user
 				}, error: function(error) {
 					res.error(error);
 				}
@@ -538,7 +530,6 @@ Parse.Cloud.define('generate_inv_code', function(req, res) {
 	var user = req.user;
 	// make sure the user is not null
 	if(user == null || user == undefined) {
-		// TODO replace the error with a code
 		// and ask the user to sign up manually 
 		// because the anonymous registration is not working for them
 		res.error("you are not registered");
@@ -568,7 +559,6 @@ Parse.Cloud.define('subscribe_cats', function(req, res) {
 	var user = req.user;
 	// make sure the user is not null
 	if(user == null || user == undefined) {
-		// TODO replace the error with a code
 		// and ask the user to sign up manually 
 		// because the anonymous registration is not working for them
 		res.error("user is not registered");
@@ -595,7 +585,6 @@ Parse.Cloud.define('subscribe_to_cat', function(req, res) {
 	var user = req.user;
 	// make sure the user is not null
 	if(user == null || user == undefined) {
-		// TODO replace the error with a code
 		// and ask the user to sign up manually 
 		// because the anonymous registration is not working for them
 		res.error("user is not registered");
@@ -636,7 +625,6 @@ Parse.Cloud.define('subscribe_cities', function(req, res) {
 	var user = req.user;
 	// make sure the user is not null
 	if(user == null || user == undefined) {
-		// TODO replace the error with a code
 		// and ask the user to sign up manually 
 		// because the anonymous registration is not working for them
 		res.error("user is not registered");
@@ -663,7 +651,6 @@ Parse.Cloud.define('turn_on_notifications', function(req, res) {
 	var user = req.user;
 	// make sure the user is not null
 	if(user == null || user == undefined) {
-		// TODO replace the error with a code
 		// and ask the user to sign up manually 
 		// because the anonymous registration is not working for them
 		res.error("user is not registered");
@@ -693,7 +680,6 @@ Parse.Cloud.define('turn_off_notifications', function(req, res) {
 	var user = req.user;
 	// make sure the user is not null
 	if(user == null || user == undefined) {
-		// TODO replace the error with a code
 		// and ask the user to sign up manually 
 		// because the anonymous registration is not working for them
 		res.error("user is not registered");
@@ -721,7 +707,6 @@ Parse.Cloud.define('make_msgs_seen', function(req, res) {
 	var user = req.user;
 	// make sure the user is not null
 	if(user == null || user == undefined) {
-		// TODO replace the error with a code
 		// and ask the user to sign up manually 
 		// because the anonymous registration is not working for them
 		res.error("user is not registered");
@@ -793,7 +778,9 @@ Parse.Cloud.define('expire_ads', function(req, res) {
 		adObj.set('desc', ad.get('desc'));
 		adObj.set('ad_status', 'expired');
 		return adObj.save().then(function(savedAd) {
-			console.log("I'm here"); // TODO remove this
+			// DELETE from website
+			// TODO test in production
+			websiteModule.deleteFromWebsite(ad.get('wordpress_post_id'));
 			ad.destroy({
 				success:function() {
 						res.success(200);
@@ -829,7 +816,6 @@ Parse.Cloud.define('extend_ad', function(req, res) {
 	var user = req.user;
 	// make sure the user is not null
 	if(user == null || user == undefined) {
-		// TODO replace the error with a code
 		// and ask the user to sign up manually 
 		// because the anonymous registration is not working for them
 		res.error("user is not registered");
@@ -876,18 +862,14 @@ Parse.Cloud.define('extend_ad', function(req, res) {
 						}
 					});
 
-					// TODO send sms to the user indicating that their ad was published
 					// TODO test this  notification to the users subscribed to this category that a new ad was pubed
 					var promise = notifier.prepareBulkNotification(savedAd);
 					promise.then(function(result) {
-						console.log("PROMISE RESOLVED"); // TODO remove
 						notifier.sendBulkNotification();
 					}, function(error) {
 						console.log(error);
 					});
-					console.log(promise); // TODO remove
 
-					// post to the website TODO test this
 					websiteModule.postToWebsite(savedAd);
 				
 				}, error: function(error) {
@@ -905,49 +887,3 @@ Parse.Cloud.define('extend_ad', function(req, res) {
 });
 
 
-
-// TODO remove this test function
-Parse.Cloud.define('send_reject_message', function(req, res) {
-	messager.sendPublishmentMsg(req.params.title, req.params.user_id, req.params.ad_id);
-	res.success(200);
-});
-
-// TODO remove this test
-Parse.Cloud.define('test_notification', function(req, res) {
-	var params = {
-		app_id: "30fb777b-5219-4919-bd01-29cfa4583a79",
-		include_player_ids: ["3c85a0da-eaef-46d6-b5a6-e608435d9641"],
-		contents: {en: req.params.message},
-		headings: {en: req.params.title},
-		data: {foo : "bar"}
-	};
-	notifier.sendNotification(params);
-	res.success(200);
-});
-
-// TODO remove this
-Parse.Cloud.define('wp_rest_test', function(req, res) {
-
-	var params = {
-			status: 'publish',
-			title: 'title',
-			content: 'desc',
-			excerpt: 'excerpt',
-			comment_status: 'open',
-			categories: [],
-			tags: [] 
-		}
-			
-		Parse.Cloud.httpRequest({
-			method: 'POST',
-			url: 'http://192.168.1.7/wordpress/wp-json/wp/v2/posts',
-			params: params,
-			headers:{
-				Authorization: 'Basic bmF6YXI6a2RDcyBYOWJoIGN5eHEgYlVjQQ=='
-			}
-		}).then(function(httpResponse) {
-			res.success(httpResponse);
-		}, function(httpResponse) {
-			res.error(httpResponse);
-		});
-});

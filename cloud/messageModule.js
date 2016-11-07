@@ -40,7 +40,6 @@ module.exports = {
 		MsgObj.save(null, {
 			success: function(savedAd) {
 				console.log("sent expiration message to " + user.id);
-				// TODO test this notification
 				var params = {};
 				params.include_player_ids = [user.get('onesignal_id')];
 				params.contents = {en : strings.ad_expired_title};
@@ -66,7 +65,6 @@ module.exports = {
 		MsgObj.save(null, {
 			success: function(savedAd) {
 				console.log("sent waiting message to " + user.id);
-				// TODO test this notification
 				var params = {};
 				params.include_player_ids = [user.get('onesignal_id')];
 				params.contents = {en : strings.ad_submitted_subtitle};
@@ -92,7 +90,6 @@ module.exports = {
 		MsgObj.save(null, {
 			success: function(savedAd) {
 				console.log("sent rejection message to " + user);
-				// TODO test this notification
 				var params = {};
 				params.include_player_ids = [user.get('onesignal_id')];
 				params.contents = {en : strings.ad_status_subtitle};
@@ -118,7 +115,6 @@ module.exports = {
 		MsgObj.save(null, {
 			success: function(savedAd) {
 				console.log("sent publishment message to " + user);
-				// TODO test this notification
 				var params = {};
 				params.include_player_ids = [user.get('onesignal_id')];
 				params.contents = {en : strings.ad_status_subtitle};
@@ -131,5 +127,4 @@ module.exports = {
 		});
 	}
 	
-	// TODO add Admin message type
 }

@@ -3,9 +3,10 @@ var stringModule = require('./stringsModule.js');
 
 var strings = stringModule.getStrings();
 
-var ip = "192.168.1.5";
-var url = "http://" + ip +"/wordpress/wp-json/wp/v2";
-var authToken = "bmF6YXI6a2RDcyBYOWJoIGN5eHEgYlVjQQ==";
+var ip = "whatsbar.ir";
+var url = "http://" + ip +"/wp-json/wp/v2";
+
+var authToken = "bmF6YXJhazpTdXdYIGZpcFogWVBiQiBvRTRBCg==";
 
 module.exports = {
 	deleteFromWebsite: function(adId) {
@@ -133,7 +134,7 @@ module.exports = {
 				ad.set('web_link', response.link);
 				ad.save();
 			}, function(httpResponse) {
-				console.log("FAILED WEBSITE POST");
+				console.log("FAILED WEBSITE POST: " + httpResponse.text);
 			});
 
 		}, function(result) {

@@ -402,7 +402,6 @@ Parse.Cloud.define('publish_ad', function(req, res) {
 						}
 					});
 
-					// TODO test this  notification to the users subscribed to this category that a new ad was pubed
 					var promise = notifier.prepareBulkNotification(savedAd);
 					promise.then(function(result) {
 						notifier.sendBulkNotification();
@@ -410,7 +409,6 @@ Parse.Cloud.define('publish_ad', function(req, res) {
 						console.log(error);
 					});
 
-					// post to the website TODO test this
 					websiteModule.postToWebsite(savedAd);
 				
 				}, error: function(error) {
@@ -493,7 +491,6 @@ Parse.Cloud.define('submit_invitation', function(req, res) {
 					invObj.save({
 						success: function(savedObj) {
 							res.success(200);
-							// TODO test this notification to the inviter stating that someone used their code
 							var userQ = new Parse.Query('User');
 							userQ.select('onesignal_id');
 							userQ.get(user.id, {
@@ -735,7 +732,7 @@ Parse.Cloud.define('make_msgs_seen', function(req, res) {
 
 /**
  * expire the ads that are a month old
- */ // TODO delete the ad from the wordpress website
+ */
 Parse.Cloud.define('expire_ads', function(req, res) {
 	Parse.Cloud.useMasterKey();
 

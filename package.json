@@ -14,6 +14,7 @@
     "kerberos": "~0.0.x",
     "node-cron": "^1.1.2",
     "parse": "~1.8.0",
+    "parse-dashboard": "^1.0.19",
     "parse-server": "*"
   },
   "scripts": {

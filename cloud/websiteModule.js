@@ -3,7 +3,7 @@ var stringModule = require('./stringsModule.js');
 
 var strings = stringModule.getStrings();
 
-var ip = "whatsbar.ir";
+var ip = "saharak.ir";
 var url = "http://" + ip +"/wp-json/wp/v2";
 
 var authToken = "bmF6YXJhazpTdXdYIGZpcFogWVBiQiBvRTRBCg==";
@@ -115,7 +115,6 @@ module.exports = {
 				tagObj.name == strings.urgent) tags.push(tagObj.id);
 			}
 
-			console.log("tags : " + tags + " cats " + categories); // TODO remove this
 
 			params.categories = categories;
 			params.tags = tags;

@@ -29,7 +29,7 @@ var api = new ParseServer({
 var dashboard = new ParseDashboard({
 	"apps" : [
 		{
-			"serverURL" : "http://localhost:1337/parse",
+			"serverURL" : "http://95.211.219.111:1337/parse",
 			"appId":"myAppId",
 			"masterKey":"myMasterKey",
 			"appName" : "panjareh"

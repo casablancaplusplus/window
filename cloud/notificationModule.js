@@ -1,7 +1,7 @@
 var stringsModule = require('./stringsModule.js');
 
 var strings = stringsModule.getStrings();
-var appId = "30fb777b-5219-4919-bd01-29cfa4583a79";
+var appId = "8bcee91d-cac0-4c7b-bd14-8795dc0f678e";
 
 /**
  * by bulk notification we mean the notification that will be sent to the 
@@ -19,7 +19,7 @@ module.exports = {
 			url: "https://onesignal.com/api/v1/notifications",
 			headers: {
 				"Content-Type":"application/json;charset=utf-8",
-				"Authorization":"Basic NTZjZTVlNzItODY3Ni00YjFjLWJmMjYtMjdhZTMyZmM1Nzdk",
+				"Authorization":"Basic YzFlOWNhOTEtN2NiNC00YzgwLTgwZDAtMDFkNDEwNjhkZWU2",
 			},
 			body: JSON.stringify(params)
 		}).then(function(httpResponse) {

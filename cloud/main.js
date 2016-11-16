@@ -331,8 +331,12 @@ Parse.Cloud.define('delete_published_ad', function(req, res) {
 Parse.Cloud.define('send_admin_message', function(req, res) {
 	Parse.Cloud.useMasterKey();
 
-	// TODO check user role
-	var userq = new Parse.Query('User');
+	var query = (new Parse.Query(Parse.Role));
+	query.equalTo("name", "Admin");
+	query.equalTo("users", req.user);
+	query.first().then(function(adminRole) {
+    		if (adminRole) {
+			var userq = new Parse.Query('User');
 	userq.select("onesignal_id");
 	userq.find({
 		success: function(results) {
@@ -352,6 +356,13 @@ Parse.Cloud.define('send_admin_message', function(req, res) {
 			res.error(error);
 		}
 	})
+    		} else {
+			res.error("You are not allowed to perform this operation");
+        		console.log("user is not an admin");
+   		}
+	});
+
+	
 });
 	
 /**
@@ -360,10 +371,12 @@ Parse.Cloud.define('send_admin_message', function(req, res) {
 Parse.Cloud.define('publish_ad', function(req, res) {
 	Parse.Cloud.useMasterKey();
 
-	// TODO check user role
-	
-
-	// fetch the ad
+	var query = (new Parse.Query(Parse.Role));
+	query.equalTo("name", "Moderator");
+	query.equalTo("users", req.user);
+	query.first().then(function(moderatorRole) {
+    		if (moderatorRole) {
+			// fetch the ad
 	var newAd = new Parse.Query("new_ad");
 	newAd.get(req.params.object_id, {
 		success: function(obj) {
@@ -419,6 +432,13 @@ Parse.Cloud.define('publish_ad', function(req, res) {
 			res.error(error);
 		}
 	})
+    		} else {
+			res.error("you are not allowed to perform this operation");
+        		console.log("NOT MODERATOR TO PUBLISH THIS AD");
+    		}
+	});
+
+	
 });
 
 /**
@@ -427,9 +447,13 @@ Parse.Cloud.define('publish_ad', function(req, res) {
 Parse.Cloud.define('reject_ad', function(req, res) {
 	Parse.Cloud.useMasterKey();
 
-	// TODO check user role (should be moderator)
-	
-	var newAd = new Parse.Query('new_ad');
+	// check role
+	var query = (new Parse.Query(Parse.Role));
+	query.equalTo("name", "Moderator");
+	query.equalTo("users", req.user);
+	query.first().then(function(moderatorRole) {
+    		if (moderatorRole) {
+			var newAd = new Parse.Query('new_ad');
 	newAd.get(req.params.object_id, {
 		success: function(obj) {
 			// update the object
@@ -458,6 +482,12 @@ Parse.Cloud.define('reject_ad', function(req, res) {
 			res.error(error);
 		}
 	})
+    		} else {
+			res.error("You are not allowed to perform this operation");
+        		console.log("user is not an admin");
+   		}
+	});		
+	
 });
 
 

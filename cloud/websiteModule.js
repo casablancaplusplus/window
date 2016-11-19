@@ -36,8 +36,26 @@ module.exports = {
 
 			// the content
 			var content = '';
+			// set the ad type
+			content += strings.ad_type;
+			content += strings.colon;
+			content += ' ';
+			content += '<b>' + ad.get('type_name') + '</b>';
+			// set the ad category
+			content += '<br/>';
+			content += strings.ad_category;
+			content += strings.colon;
+			content += ' ';
+			content += '<b>' + ad.get('category_name') + '</b>';
+			// set the city
+			content += '<br/>';
+			content += strings.city;
+			content += strings.colon;
+			content += ' ';
+			content += '<b>' + ad.get('city_name') + '</b>';
+			// set the desc
+			content += '<br/><br/>';
 			content += desc;
-			
 			// add the phone number to the end of the content
 			content += '<br/><br>';
 			content += strings.phone_number;
@@ -64,6 +82,7 @@ module.exports = {
 				content += ' ';
 				content += '<b><a href=\"http://' + website + '\">' + website + '</a></b>';
 			}
+
 
 		var params = {
 			status: 'publish',

@@ -25,11 +25,12 @@ Parse.Cloud.define('submit_new_ad', function(req, res) {
 		// because the anonymous registration is not working for them
 		res.error("user is not registered");
 	} else {
-		// does the user have an active published ad in this category ?
+		// does the user have an active published ad in this category in this city 
 		var categoryName = req.params.category_name;
 		var pubedAdQuery = new Parse.Query("published_ads");
 		pubedAdQuery.equalTo("user", user.id);
 		pubedAdQuery.equalTo("category_name", categoryName);
+		pubedAdQuery.equalTo("city_name", req.params.city_name);
 		// ads younger than one month are active
 		// create a one month old Date object
 		var nowMillis = Date.now();
@@ -44,19 +45,20 @@ Parse.Cloud.define('submit_new_ad', function(req, res) {
 			success: function(count) {
 				if(count > 0) {
 					// show the user a dialog with the right message
-					// error 1001: you already have a published ad in this category
+					// error 1001: you already have a published ad in this category in this city
 					res.error(1001);
 				} else {
 					// does the user have a new ad in this category that is waiting ?
 					var newAdQuery = new Parse.Query("new_ad");
 					newAdQuery.equalTo("user", user.id);
 					newAdQuery.equalTo("category_name", categoryName);
+					newAdQuery.equalTo("city_name", req.params.city_name);
 					newAdQuery.equalTo("ad_status", "waiting");
 					newAdQuery.count({
 						success: function(count) {
 							if(count > 0) {
 								// show the user a proper dialog
-								// error 1002: you already have a waiting ad in this category
+								// error 1002: you already have a waiting ad in this category in this city
 								res.error(1002);
 							} else {
 								// create the object
